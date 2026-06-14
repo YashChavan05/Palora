@@ -12,9 +12,6 @@ from services.ai_service import generate_ai_response, text_to_speech
 from services.voice_analysis import analyze_voice
 from routes.auth import get_current_user
 from database import get_db
-import whisper
-import whisper.audio as _whisper_audio
-import soundfile as sf
 
 router = APIRouter()
 
@@ -23,21 +20,35 @@ FFMPEG_EXE  = imageio_ffmpeg.get_ffmpeg_exe()
 SAMPLE_RATE = 16000
 DEFAULT_VOICE_ID = "EXAVITQu4vr4xnSDxMaL"
 
-# Patch Whisper's load_audio to use the bundled ffmpeg binary
-def _patched_load_audio(file: str, sr: int = SAMPLE_RATE):
-    cmd = [
-        FFMPEG_EXE, "-nostdin", "-threads", "0",
-        "-i", file,
-        "-f", "s16le", "-ac", "1", "-acodec", "pcm_s16le",
-        "-ar", str(sr), "-",
-    ]
-    out = subprocess.run(cmd, capture_output=True, check=True).stdout
-    return np.frombuffer(out, np.int16).flatten().astype(np.float32) / 32768.0
+# ── Lazy Whisper model — loaded on first request, not at import time ──────────
+_whisper_model = None
 
-_whisper_audio.load_audio = _patched_load_audio
+def get_whisper_model():
+    """Load Whisper tiny model once, reuse on subsequent requests."""
+    global _whisper_model
+    if _whisper_model is None:
+        import whisper
+        import whisper.audio as _whisper_audio
 
-# Load Whisper once at startup
-model = whisper.load_model("base")
+        # Patch Whisper's load_audio to use the bundled ffmpeg binary
+        def _patched_load_audio(file: str, sr: int = SAMPLE_RATE):
+            cmd = [
+                FFMPEG_EXE, "-nostdin", "-threads", "0",
+                "-i", file,
+                "-f", "s16le", "-ac", "1", "-acodec", "pcm_s16le",
+                "-ar", str(sr), "-",
+            ]
+            out = subprocess.run(cmd, capture_output=True, check=True).stdout
+            return np.frombuffer(out, np.int16).flatten().astype(np.float32) / 32768.0
+
+        _whisper_audio.load_audio = _patched_load_audio
+
+        # "tiny" uses ~150 MB less RAM than "base" — critical for free tier
+        _whisper_model = whisper.load_model("tiny")
+        print("Whisper tiny model loaded.")
+
+    return _whisper_model
+
 
 MIME_TO_EXT = {
     "audio/webm":             ".webm",
@@ -92,7 +103,8 @@ async def voice_chat(
             print(f"Voice analysis warning: {e}")
             analysis = {"speed": "normal", "tone": "calm", "style": "deep"}
 
-        # 4. Speech → Text
+        # 4. Speech → Text (lazy-load Whisper on first call)
+        model     = get_whisper_model()
         result    = model.transcribe(wav_path, fp16=False)
         user_text = result["text"].strip()
 
