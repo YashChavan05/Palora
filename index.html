@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Palora - AI Companion</title>
+  <meta name="description" content="An empathetic AI companion for meaningful conversations, emotional support, and deep connection." />
+  <meta name="author" content="Palora Team" />
+
+  <meta property="og:title" content="Palora AI" />
+  <meta property="og:description" content="Your empathetic AI companion for meaningful conversations." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/og-image.png" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Palora AI" />
+  <meta name="twitter:description" content="Your empathetic AI companion for meaningful conversations." />
+  <!-- Theme persistence: apply before React mounts to avoid flash -->
+  <script>
+    (function() {
+      var t = localStorage.getItem('palora-theme');
+      if (t === 'light') document.documentElement.classList.add('light');
+    })();
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

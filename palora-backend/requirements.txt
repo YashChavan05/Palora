@@ -1,0 +1,46 @@
+# ── Web framework ─────────────────────────────────────────────────────────────
+fastapi==0.110.0
+uvicorn==0.29.0
+python-multipart==0.0.20
+
+# ── Database ───────────────────────────────────────────────────────────────────
+pymongo==4.17.0
+
+# ── Authentication ─────────────────────────────────────────────────────────────
+python-jose[cryptography]==3.5.0
+passlib[bcrypt]==1.7.4
+cryptography==45.0.4
+bcrypt==4.0.1
+
+# ── Validation & settings ──────────────────────────────────────────────────────
+pydantic[email]==2.13.2
+pydantic-settings==2.13.1
+email-validator==2.3.0
+
+# ── Environment ────────────────────────────────────────────────────────────────
+python-dotenv==1.0.1
+
+# ── AI / LLM ──────────────────────────────────────────────────────────────────
+groq==0.37.1
+openai-whisper==20250625
+
+# ── Text-to-Speech & Voice cloning ────────────────────────────────────────────
+elevenlabs==2.39.0
+requests==2.33.1
+
+# ── Audio processing ──────────────────────────────────────────────────────────
+librosa==0.11.0
+soundfile==0.13.1
+imageio[ffmpeg]==2.37.3
+imageio-ffmpeg==0.6.0
+
+# ── Numerical / ML ────────────────────────────────────────────────────────────
+numpy==1.26.4
+scikit-learn==1.4.2
+joblib==1.5.1
+pandas==2.2.1
+
+# ── Deep learning (Whisper dependency) ────────────────────────────────────────
+# CPU-only torch — ~200 MB vs ~2 GB for full torch. Required for Render free tier.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.10.0+cpu
