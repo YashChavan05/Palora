@@ -29,14 +29,14 @@ elevenlabs==2.39.0
 requests==2.33.1
 
 # ── Audio processing ──────────────────────────────────────────────────────────
-librosa==0.11.0
+librosa
 soundfile==0.13.1
 imageio[ffmpeg]==2.37.3
 imageio-ffmpeg==0.6.0
 
 # ── Numerical / ML ────────────────────────────────────────────────────────────
-numpy==1.26.4
-scikit-learn==1.4.2
+numpy
+scikit-learn
 joblib==1.5.1
 pandas==2.2.1
 
